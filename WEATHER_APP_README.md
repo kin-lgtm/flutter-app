@@ -7,15 +7,18 @@ A Flutter application that derives geographic coordinates from a student index n
 ### ✅ Functional Requirements (All Implemented)
 
 1. **Student Index Input**
+
    - Text field for entering student index (pre-filled with "194174B")
    - Real-time coordinate derivation as you type
 
 2. **Coordinate Derivation**
+
    - Latitude: 5 + (firstTwoDigits / 10.0) → Range: 5.0 to 15.9
    - Longitude: 79 + (nextTwoDigits / 10.0) → Range: 79.0 to 89.9
    - Displays computed coordinates with 2 decimal precision
 
 3. **Weather Fetching**
+
    - "Fetch Weather" button to retrieve current weather
    - Calls Open-Meteo API: `https://api.open-meteo.com/v1/forecast?latitude=LAT&longitude=LON&current_weather=true`
    - Displays:
@@ -25,9 +28,11 @@ A Flutter application that derives geographic coordinates from a student index n
      - Last update time (from device clock)
 
 4. **Request URL Display**
+
    - Shows the exact API request URL in small text for verification
 
 5. **Loading & Error Handling**
+
    - Loading indicator (circular progress) while fetching
    - Friendly error messages for:
      - Network failures
@@ -43,35 +48,40 @@ A Flutter application that derives geographic coordinates from a student index n
 ## How It Works
 
 ### Coordinate Calculation Example
+
 For student index "194174B":
+
 - First two digits: **19**
 - Next two digits: **41**
 - Latitude: 5 + (19 / 10.0) = **6.90°**
 - Longitude: 79 + (41 / 10.0) = **83.10°**
 
 ### Dependencies Used
+
 ```yaml
 dependencies:
   flutter: sdk
-  http: ^1.1.0              # For API calls
+  http: ^1.1.0 # For API calls
   shared_preferences: ^2.2.2 # For local caching
 ```
 
 ## Installation & Running
 
 1. **Install dependencies:**
+
    ```bash
    flutter pub get
    ```
 
 2. **Run the app:**
+
    ```bash
    # For Chrome/Web
    flutter run -d chrome
-   
+
    # For Windows
    flutter run -d windows
-   
+
    # For Android/iOS
    flutter run
    ```
@@ -79,6 +89,7 @@ dependencies:
 ## API Information
 
 **API Provider:** Open-Meteo (https://open-meteo.com/)
+
 - **No API key required**
 - **Endpoint:** `https://api.open-meteo.com/v1/forecast`
 - **Parameters:**
@@ -87,6 +98,7 @@ dependencies:
   - `current_weather`: true
 
 **Response includes:**
+
 - Temperature (°C)
 - Wind speed (km/h)
 - Weather code (WMO code)
@@ -106,6 +118,7 @@ dependencies:
 ## Error Handling
 
 The app handles various error scenarios:
+
 1. Invalid index format (non-numeric first 4 characters)
 2. Index too short (less than 4 characters)
 3. Network connection failures
@@ -130,6 +143,7 @@ The app handles various error scenarios:
 ## Screenshots
 
 The app displays:
+
 - Student index input card
 - Derived coordinates card
 - Current weather card with all data
