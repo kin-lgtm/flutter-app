@@ -20,157 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const StartPage(),
-    );
-  }
-}
-
-// Starting Page
-class StartPage extends StatelessWidget {
-  const StartPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF7B5E3F), // Brown/bronze top
-              Color(0xFF9B7956), // Lighter brown middle
-              Color(0xFF6B5D7E), // Purple/violet bottom
-              Color(0xFF4A4458), // Dark purple bottom
-            ],
-            stops: [0.0, 0.3, 0.7, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Weather Icon
-                Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 30,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.wb_sunny,
-                    size: 100,
-                    color: Colors.amber.shade300,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                
-                // App Title
-                Text(
-                  'Weather App',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 2,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.3),
-                        offset: Offset(0, 4),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                
-                // Subtitle
-                Text(
-                  'Get weather from your student index',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 80),
-                
-                // Start Button
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const WeatherHomePage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 60,
-                      vertical: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.amber.shade400,
-                          Colors.orange.shade600,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.5),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'START',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 3,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 100),
-                
-                // Footer
-                Text(
-                  'Powered by Open-Meteo',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      home: const WeatherHomePage(),
     );
   }
 }
@@ -183,8 +33,10 @@ class WeatherHomePage extends StatefulWidget {
 }
 
 class _WeatherHomePageState extends State<WeatherHomePage> {
-  final TextEditingController _indexController = TextEditingController(text: '194174B');
-  
+  final TextEditingController _indexController = TextEditingController(
+    text: '194174B',
+  );
+
   double? _latitude;
   double? _longitude;
   String? _requestUrl;
@@ -192,7 +44,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
   bool _isLoading = false;
   String? _errorMessage;
   bool _isCached = false;
-  
+
   // Weather data
   double? _temperature;
   double? _windSpeed;
@@ -215,7 +67,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cachedData = prefs.getString('last_weather_data');
-      
+
       if (cachedData != null) {
         final data = json.decode(cachedData);
         setState(() {
@@ -267,7 +119,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     try {
       final firstTwo = int.parse(index.substring(0, 2));
       final nextTwo = int.parse(index.substring(2, 4));
-      
+
       setState(() {
         _latitude = 5 + (firstTwo / 10.0);
         _longitude = 79 + (nextTwo / 10.0);
@@ -275,7 +127,8 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Invalid index format. First 4 characters must be digits.';
+        _errorMessage =
+            'Invalid index format. First 4 characters must be digits.';
         _latitude = null;
         _longitude = null;
       });
@@ -293,7 +146,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     }
 
     _deriveCoordinates(index);
-    
+
     if (_latitude == null || _longitude == null) {
       return;
     }
@@ -305,23 +158,25 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     });
 
     try {
-      final url = 'https://api.open-meteo.com/v1/forecast?latitude=${_latitude!.toStringAsFixed(2)}&longitude=${_longitude!.toStringAsFixed(2)}&current_weather=true';
-      
+      final url =
+          'https://api.open-meteo.com/v1/forecast?latitude=${_latitude!.toStringAsFixed(2)}&longitude=${_longitude!.toStringAsFixed(2)}&current_weather=true';
+
       setState(() {
         _requestUrl = url;
       });
 
-      final response = await http.get(Uri.parse(url)).timeout(
-        const Duration(seconds: 10),
-      );
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final currentWeather = data['current_weather'];
-        
+
         final now = DateTime.now();
-        final formattedTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
-        
+        final formattedTime =
+            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+
         setState(() {
           _temperature = currentWeather['temperature']?.toDouble();
           _windSpeed = currentWeather['windspeed']?.toDouble();
@@ -334,13 +189,15 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
         await _cacheWeatherData();
       } else {
         setState(() {
-          _errorMessage = 'Failed to fetch weather data. Status: ${response.statusCode}';
+          _errorMessage =
+              'Failed to fetch weather data. Status: ${response.statusCode}';
           _isLoading = false;
         });
       }
     } on TimeoutException {
       setState(() {
-        _errorMessage = 'Request timed out. Please check your internet connection.';
+        _errorMessage =
+            'Request timed out. Please check your internet connection.';
         _isLoading = false;
       });
     } catch (e) {
@@ -360,10 +217,10 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF8B7355), // Brown top
-              Color(0xFF9B8270), // Tan middle
-              Color(0xFF7B6B8E), // Purple middle
-              Color(0xFF5A4D6E), // Dark purple bottom
+              Color(0xFF2C3E50), // Dark blue-grey top
+              Color(0xFF34495E), // Blue-grey middle
+              Color.fromARGB(255, 48, 76, 119), // Blue (button color)
+              Color(0xFF1A1A2E), // Dark blue-black bottom
             ],
             stops: [0.0, 0.3, 0.6, 1.0],
           ),
@@ -375,49 +232,30 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header with location and info icon
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, color: Colors.white70, size: 16),
-                              SizedBox(width: 4),
-                              Text(
-                                'Location',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                  // Header
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Weather Dashboard',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
                           ),
-                          Text(
-                            'Good Morning',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.info_outline, color: Colors.white, size: 20),
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          'Real-time weather from your location',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                  
-                  SizedBox(height: 30),
-                  
+
+                  SizedBox(height: 12),
+
                   // Main weather card
                   if (_temperature != null)
                     Center(
@@ -428,16 +266,16 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                             height: 180,
                             child: _buildWeatherIcon(_weatherCode ?? 0),
                           ),
-                          
+
                           SizedBox(height: 20),
-                          
+
                           // Temperature
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${_temperature!.toStringAsFixed(0)}',
+                                '${_temperature!.toStringAsFixed(1)}',
                                 style: TextStyle(
                                   fontSize: 120,
                                   fontWeight: FontWeight.w200,
@@ -455,7 +293,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                               ),
                             ],
                           ),
-                          
+
                           // Weather description
                           Text(
                             _getWeatherDescription(_weatherCode ?? 0),
@@ -466,9 +304,9 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                               letterSpacing: 1,
                             ),
                           ),
-                          
+
                           SizedBox(height: 8),
-                          
+
                           // Date and time
                           Text(
                             _lastUpdateTime ?? '',
@@ -477,13 +315,16 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                               color: Colors.white70,
                             ),
                           ),
-                          
+
                           SizedBox(height: 20),
-                          
+
                           // Cached indicator
                           if (_isCached)
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(20),
@@ -491,11 +332,18 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.offline_bolt, color: Colors.white, size: 16),
+                                  Icon(
+                                    Icons.offline_bolt,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     'Cached Data',
-                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -503,28 +351,8 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                         ],
                       ),
                     ),
-                  
-                  SizedBox(height: 30),
-                  
-                  // Sunrise/Sunset and Air Quality row
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildInfoItem(Icons.wb_sunny, 'Sunrise', '5:34 am'),
-                        Container(width: 1, height: 40, color: Colors.white30),
-                        _buildInfoItem(Icons.nightlight, 'Sunset', '6:34 pm'),
-                      ],
-                    ),
-                  ),
-                  
-                  SizedBox(height: 15),
-                  
+
+                  SizedBox(height: 8),
                   // Weather details row
                   Container(
                     padding: EdgeInsets.all(20),
@@ -532,31 +360,17 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                       color: Colors.white.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildInfoItem(Icons.air, 'Wind', '${_windSpeed?.toStringAsFixed(1) ?? '0'} km/h'),
-                            Container(width: 1, height: 40, color: Colors.white30),
-                            _buildInfoItem(Icons.water_drop, 'Humidity', '87%'),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildInfoItem(Icons.opacity, 'Precipitation', '57%'),
-                            Container(width: 1, height: 40, color: Colors.white30),
-                            _buildInfoItem(Icons.light_mode, 'UV Index', '34%'),
-                          ],
-                        ),
-                      ],
+                    child: Center(
+                      child: _buildInfoItem(
+                        Icons.air,
+                        'Wind Speed',
+                        '${_windSpeed?.toStringAsFixed(1) ?? '0'} km/h',
+                      ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   // Student Index Input
                   Container(
                     padding: EdgeInsets.all(20),
@@ -588,7 +402,10 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
                           ),
                           onChanged: (value) {
                             if (value.length >= 4) {
@@ -596,7 +413,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                             }
                           },
                         ),
-                        
+
                         if (_latitude != null && _longitude != null) ...[
                           SizedBox(height: 15),
                           Row(
@@ -604,11 +421,17 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                             children: [
                               Text(
                                 'Lat: ${_latitude!.toStringAsFixed(2)}°',
-                                style: TextStyle(color: Colors.white70, fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
                               ),
                               Text(
                                 'Lon: ${_longitude!.toStringAsFixed(2)}°',
-                                style: TextStyle(color: Colors.white70, fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
                               ),
                             ],
                           ),
@@ -616,9 +439,9 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                       ],
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   // Fetch Weather Button
                   SizedBox(
                     width: double.infinity,
@@ -626,7 +449,12 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _fetchWeather,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber.shade600,
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          31,
+                          105,
+                          216,
+                        ),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -652,7 +480,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                             ),
                     ),
                   ),
-                  
+
                   // Error Message
                   if (_errorMessage != null) ...[
                     SizedBox(height: 15),
@@ -669,48 +497,17 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                           Expanded(
                             child: Text(
                               _errorMessage!,
-                              style: TextStyle(color: Colors.white, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ],
-                  
-                  // Request URL
-                  if (_requestUrl != null) ...[
-                    SizedBox(height: 15),
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Request URL:',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            _requestUrl!,
-                            style: TextStyle(
-                              color: Colors.white60,
-                              fontSize: 9,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  
+
                   SizedBox(height: 20),
                 ],
               ),
@@ -720,19 +517,13 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       ),
     );
   }
-  
+
   Widget _buildInfoItem(IconData icon, String label, String value) {
     return Column(
       children: [
         Icon(icon, color: Colors.white70, size: 28),
         SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.white70, fontSize: 12)),
         SizedBox(height: 4),
         Text(
           value,
@@ -745,12 +536,12 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       ],
     );
   }
-  
+
   Widget _buildWeatherIcon(int weatherCode) {
     // Weather icons based on WMO codes
     IconData iconData;
     Color iconColor;
-    
+
     if (weatherCode == 0) {
       iconData = Icons.wb_sunny;
       iconColor = Colors.amber.shade300;
@@ -767,20 +558,15 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
       iconData = Icons.cloud;
       iconColor = Colors.white70;
     }
-    
+
     return Icon(
       iconData,
       size: 160,
       color: iconColor,
-      shadows: [
-        Shadow(
-          color: Colors.black.withOpacity(0.3),
-          blurRadius: 20,
-        ),
-      ],
+      shadows: [Shadow(color: Colors.black.withOpacity(0.3), blurRadius: 20)],
     );
   }
-  
+
   String _getWeatherDescription(int weatherCode) {
     if (weatherCode == 0) return 'CLEAR SKY';
     if (weatherCode <= 3) return 'CLOUDY';
